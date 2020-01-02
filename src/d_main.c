@@ -111,6 +111,7 @@ UINT8 window_notinfocus = false;
 //static INT32 demosequence;
 static const char *pagename = "MAP1PIC";
 static char *startupwadfiles[MAX_WADFILES];
+char savegamename[256];
 
 boolean devparm = false; // started game with -devparm
 

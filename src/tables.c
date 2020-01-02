@@ -160,15 +160,15 @@ angle_t FixedAngle(fixed_t fa)
 
 
 #if !(defined _NDS) || !(defined NONET)
-#include "t_ftan.c"
+#include "t_ftan.h"
 
-#include "t_fsin.c"
+#include "t_fsin.h"
 fixed_t *finecosine = &finesine[FINEANGLES/4];
 #endif
 
-#include "t_tan2a.c"
+#include "t_tan2a.h"
 
-#include "t_facon.c"
+#include "t_facon.h"
 
 
 FUNCMATH angle_t FixedAcos(fixed_t x)

@@ -38,6 +38,12 @@ extern INT32 msg_id;
 #include "p_local.h" // camera info
 #include "m_misc.h" // for tunes command
 
+#ifdef MUSICSLOT_COMPATIBILITY
+// For compatibility with code/scripts relying on older versions
+// This is a list of all the "special" slot names and their associated numbers
+extern const char *compat_special_music_slots[16];
+#endif
+
 #ifdef HW3SOUND
 // 3D Sound Interface
 #include "hardware/hw3sound.h"

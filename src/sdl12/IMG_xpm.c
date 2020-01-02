@@ -49,7 +49,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-
+#include <SDL/SDL.h>
 //#include "SDL_image.h"
 
 

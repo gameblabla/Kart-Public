@@ -810,12 +810,12 @@ void R_DrawViewBorder(void)
 //                   INCLUDE 8bpp DRAWING CODE HERE
 // ==========================================================================
 
-#include "r_draw8.c"
+#include "r_draw8.h"
 
 // ==========================================================================
 //                   INCLUDE 16bpp DRAWING CODE HERE
 // ==========================================================================
 
 #ifdef HIGHCOLOR
-#include "r_draw16.c"
+#include "r_draw16.h"
 #endif

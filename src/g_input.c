@@ -1337,6 +1337,22 @@ void G_Controldefault(void)
 	gamecontrol4[gc_brake      ][0] = KEY_4JOY1+1; // B
 	gamecontrol4[gc_fire       ][0] = KEY_4JOY1+4; // LB
 	gamecontrol4[gc_drift      ][0] = KEY_4JOY1+5; // RB
+	
+#ifdef GCW0
+	gamecontrol[gc_aimforward    ][0] = KEY_UPARROW;
+	gamecontrol[gc_aimbackward   ][0] = KEY_DOWNARROW;
+	gamecontrol[gc_turnleft   ][0] = KEY_LEFTARROW;
+	gamecontrol[gc_turnright  ][0] = KEY_RIGHTARROW;
+
+	gamecontrol[gc_pause      ][0] = KEY_ENTER; //START
+	gamecontrol[gc_camreset   ][0] = KEY_PAUSE; //POWER DOWN
+	
+	gamecontrol[gc_accelerate ][0] = KEY_LCTRL; // A
+	gamecontrol[gc_lookback   ][0] = KEY_LSHIFT; // X
+	gamecontrol[gc_brake      ][0] = KEY_LALT; // B
+	gamecontrol[gc_fire       ][0] = KEY_TAB; // LB
+	gamecontrol[gc_drift      ][0] = KEY_BACKSPACE; // RB
+#endif
 }
 //#endif
 

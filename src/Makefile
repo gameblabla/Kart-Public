@@ -81,6 +81,24 @@
 #
 #############################################################################
 
+LINUX = 1
+NOGME = 1
+NOASM = 1
+NOIPX = 1
+NOHW = 1
+SDL12 = 1
+NO_LUA = 1
+NOPOSTPROCESSING = 1
+NONX86 = 1
+NOPNG=1
+NOZLIB=1
+
+CC = /opt/gcw0-toolchain/usr/bin/mipsel-linux-gcc
+CXX = /opt/gcw0-toolchain/usr/bin/mipsel-linux-g++
+#M5= -Os
+#M4= -Os
+
+
 # SRB2 data files
 D_DIR?=../bin/Resources
 D_FILES=$(D_DIR)/srb2.srb \
@@ -283,16 +301,6 @@ else
 endif
 
 OPTS += -DCOMPVERSION
-
-ifndef NONX86
-ifndef GCC29
-	M5=-march=pentium
-	M4=-march=i486
-else
-	M5=-mpentium
-	M4=-m486
-endif
-endif
 
 ifndef NOASM
 ifndef NONX86

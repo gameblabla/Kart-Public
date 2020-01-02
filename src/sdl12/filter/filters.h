@@ -5,7 +5,7 @@
 #pragma warning(disable : 4514 4214 4244)
 #endif
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 
 #ifdef _MSC_VER
 #pragma warning(default : 4214 4244)

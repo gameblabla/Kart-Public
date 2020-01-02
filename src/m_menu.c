@@ -1227,9 +1227,11 @@ static menuitem_t OP_Mouse2OptionsMenu[] =
 
 static menuitem_t OP_VideoOptionsMenu[] =
 {
+#ifndef GCW0
 	{IT_STRING | IT_CALL,	NULL,	"Set Resolution...",	M_VideoModeMenu,		 10},
 #if (defined (__unix__) && !defined (MSDOS)) || defined (UNIXCOMMON) || defined (HAVE_SDL)
 	{IT_STRING|IT_CVAR,		NULL,	"Fullscreen",			&cv_fullscreen,			 20},
+#endif
 #endif
 	{IT_STRING | IT_CVAR | IT_CV_SLIDER,
 							NULL,	"Gamma",				&cv_usegamma,			 30},
@@ -2695,6 +2697,9 @@ boolean M_Responder(event_t *ev)
 			return true;
 
 		case KEY_ENTER:
+		#ifdef GCW0
+		case KEY_LCTRL:
+		#endif
 			noFurtherInput = true;
 			currentMenu->lastOn = itemOn;
 			if (routine)
@@ -2729,6 +2734,9 @@ boolean M_Responder(event_t *ev)
 			return true;
 
 		case KEY_ESCAPE:
+		#ifdef GCW0
+		case KEY_LALT:
+		#endif
 			noFurtherInput = true;
 			currentMenu->lastOn = itemOn;
 			if (currentMenu->prevMenu)
@@ -9205,10 +9213,11 @@ static void M_VideoModeMenu(INT32 choice)
 static void M_DrawVideoMenu(void)
 {
 	M_DrawGenericMenu();
-
+	#ifndef GCW0
 	V_DrawRightAlignedString(BASEVIDWIDTH - currentMenu->x, currentMenu->y + OP_VideoOptionsMenu[0].alphaKey,
 		(SCR_IsAspectCorrect(vid.width, vid.height) ? recommendedflags : highlightflags),
 			va("%dx%d", vid.width, vid.height));
+	#endif
 }
 
 static void M_DrawHUDOptions(void)

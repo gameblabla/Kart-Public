@@ -33,7 +33,7 @@
 #include "lua_script.h"
 #include "lua_hook.h"
 #include "d_clisrv.h"
-
+#include "s_sound.h"
 #include "m_cond.h"
 
 #ifdef HAVE_BLUA

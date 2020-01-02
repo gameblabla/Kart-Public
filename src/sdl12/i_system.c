@@ -75,7 +75,7 @@ void __set_fpscr(long); // in libgcc / kernel's startup.s?
 
 #ifdef HAVE_SDL
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 
 #ifdef HAVE_TTF
 #include "i_ttf.h"
@@ -86,7 +86,7 @@ void __set_fpscr(long); // in libgcc / kernel's startup.s?
 #endif
 
 #if SDL_VERSION_ATLEAST(1,2,7) && !defined (DC)
-#include "SDL_cpuinfo.h" // 1.2.7 or greater
+#include <SDL/SDL_cpuinfo.h> // 1.2.7 or greater
 #define HAVE_SDLCPUINFO
 #endif
 
@@ -2968,7 +2968,7 @@ void I_Quit(void)
 #ifndef NONET
 	D_SaveBan(); // save the ban list
 #endif
-	G_SaveGameData(); // Tails 12-08-2002
+	G_SaveGameData(1); // Tails 12-08-2002
 	//added:16-02-98: when recording a demo, should exit using 'q' key,
 	//        but sometimes we forget and use 'F10'.. so save here too.
 
@@ -3061,7 +3061,7 @@ void I_Error(const char *error, ...)
 		if (errorcount == 9)
 		{
 			M_SaveConfig(NULL);
-			G_SaveGameData();
+			G_SaveGameData(1);
 		}
 		if (errorcount > 20)
 		{
@@ -3125,7 +3125,7 @@ void I_Error(const char *error, ...)
 #ifndef NONET
 	D_SaveBan(); // save the ban list
 #endif
-	G_SaveGameData(); // Tails 12-08-2002
+	G_SaveGameData(1); // Tails 12-08-2002
 
 	// Shutdown. Here might be other errors.
 	if (demorecording)
@@ -3366,7 +3366,7 @@ INT32 I_ClipboardCopy(const char *data, size_t size)
 	return -1;
 }
 
-char *I_ClipboardPaste(void)
+const char *I_ClipboardPaste(void)
 {
 	return NULL;
 }

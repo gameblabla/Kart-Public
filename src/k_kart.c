@@ -39,6 +39,8 @@
 #define DEFAULT_STARTTRANSCOLOR 160
 #define NUM_PALETTE_ENTRIES 256
 
+UINT8 colortranslations[MAXSKINCOLORS][16];
+
 // These should be within 14 characters to fit on the character select screen
 const char *KartColor_Names[MAXSKINCOLORS] =
 {

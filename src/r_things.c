@@ -1949,7 +1949,11 @@ static void R_CreateDrawNodes(void)
 					plane = ds->ffloorplanes[p];
 					R_PlaneBounds(plane);
 
-					if (plane->low < con_clipviewtop || plane->high > vid.height || plane->high > plane->low || plane->polyobj)
+					if (plane->low < con_clipviewtop || plane->high > vid.height || plane->high > plane->low
+#ifdef POLYOBJECTS_PLANES
+					 || plane->polyobj
+#endif
+					 )
 					{
 						ds->ffloorplanes[p] = NULL;
 						continue;

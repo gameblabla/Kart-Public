@@ -975,7 +975,9 @@ static void R_Subsector(size_t num, UINT8 viewnumber)
 	ffloor[numffloors].slope = NULL;
 #endif
 	ffloor[numffloors].plane = NULL;
+#ifdef POLYOBJECTS_PLANES
 	ffloor[numffloors].polyobj = NULL;
+#endif
 	if (frontsector->ffloors)
 	{
 		ffloor_t *rover;
@@ -996,8 +998,9 @@ static void R_Subsector(size_t num, UINT8 viewnumber)
 			}
 
 			ffloor[numffloors].plane = NULL;
+#ifdef POLYOBJECTS_PLANES
 			ffloor[numffloors].polyobj = NULL;
-
+#endif
 			heightcheck =
 #ifdef ESLOPE
 				*rover->b_slope ? P_GetZAt(*rover->b_slope, viewx, viewy) :
@@ -1043,7 +1046,9 @@ static void R_Subsector(size_t num, UINT8 viewnumber)
 			if (numffloors >= MAXFFLOORS)
 				break;
 			ffloor[numffloors].plane = NULL;
+#ifdef POLYOBJECTS_PLANES
 			ffloor[numffloors].polyobj = NULL;
+#endif
 
 			heightcheck =
 #ifdef ESLOPE

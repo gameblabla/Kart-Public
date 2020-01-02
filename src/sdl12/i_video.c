@@ -29,7 +29,7 @@
 
 #ifdef HAVE_SDL
 
-#include "SDL.h"
+#include <SDL/SDL.h>
 
 #ifdef _MSC_VER
 #pragma warning(default : 4214 4244)
@@ -124,7 +124,7 @@
 #endif
 
 // maximum number of windowed modes (see windowedModes[][])
-#if defined (_WIN32_WCE) || defined (DC) || defined (PSP) || defined(GP2X)
+#if defined (_WIN32_WCE) || defined (DC) || defined (PSP) || defined(GP2X) || defined(GCW0)
 #define MAXWINMODES (1)
 #elif defined (WII)
 #define MAXWINMODES (8)
@@ -158,8 +158,13 @@ UINT8 graphics_started = 0; // Is used in console.c and screen.c
 
 // To disable fullscreen at startup; is set in VID_PrepareModeList
 boolean allow_fullscreen = false;
+#ifdef GCW0
+static SDL_bool disable_fullscreen = SDL_TRUE;
+#define USE_FULLSCREEN 0
+#else
 static SDL_bool disable_fullscreen = SDL_FALSE;
 #define USE_FULLSCREEN (disable_fullscreen||!allow_fullscreen)?0:cv_fullscreen.value
+#endif
 static SDL_bool disable_mouse = SDL_FALSE;
 #define USE_MOUSEINPUT (!disable_mouse && cv_usemouse.value && SDL_GetAppState() & SDL_APPACTIVE)
 #define MOUSE_MENU false //(!disable_mouse && cv_usemouse.value && menuactive && !USE_FULLSCREEN)
@@ -205,6 +210,12 @@ static       SDL_bool    exposevideo = SDL_FALSE;
 // windowed video modes from which to choose from.
 static INT32 windowedModes[MAXWINMODES][2] =
 {
+#if defined(GCW0)
+	{ 320, 240}, // 1.33,1.00
+#elif defined(RS90)
+	{ 240, 160}, // 1.33,1.00
+#else
+
 #if !(defined (_WIN32_WCE) || defined (DC) || defined (PSP) || defined (GP2X))
 #ifndef WII
 #ifndef _PS3
@@ -238,6 +249,7 @@ static INT32 windowedModes[MAXWINMODES][2] =
 	{ 320, 240}, // 1.33,1.00
 #endif
 	{ 320, 200}, // 1.60,1.00
+#endif
 };
 
 static void SDLSetMode(INT32 width, INT32 height, INT32 bpp, Uint32 flags)
@@ -267,6 +279,27 @@ static void SDLSetMode(INT32 width, INT32 height, INT32 bpp, Uint32 flags)
 #ifdef FILTERS
 	bpp = Setupf2x(width, height, bpp);
 #endif
+
+
+#ifdef GCW0
+	if (vidSurface)
+		return;
+	bpp = 16;
+	width = 320;
+	height = 240;
+	vidSurface = SDL_SetVideoMode(width, height, bpp, flags | SDL_HWSURFACE);
+	if (!vidSurface)
+		return;
+#elif RS90
+	if (vidSurface)
+		return;
+	bpp = 16;
+	width = 240;
+	height = 160;
+	vidSurface = SDL_SetVideoMode(width, height, bpp, flags | SDL_HWSURFACE);
+	if (!vidSurface)
+		return;
+#else
 	if (SDLVD && strncasecmp(SDLVD,"glSDL",6) == 0) //for glSDL videodriver
 		vidSurface = SDL_SetVideoMode(width, height,0,SDL_DOUBLEBUF);
 #ifdef _WII // don't want it to use HWSURFACE, so make it first here
@@ -280,6 +313,8 @@ static void SDLSetMode(INT32 width, INT32 height, INT32 bpp, Uint32 flags)
 	else if (SDL_VideoModeOK(width, height, bpp, flags|SDL_SWSURFACE) >= bpp)
 		vidSurface = SDL_SetVideoMode(width, height, bpp, flags|SDL_SWSURFACE);
 	else return;
+#endif
+
 	realwidth = (Uint16)width;
 	realheight = (Uint16)height;
 #ifdef HAVE_DCSDL
@@ -287,7 +322,7 @@ static void SDLSetMode(INT32 width, INT32 height, INT32 bpp, Uint32 flags)
 	SDL_DC_EmulateMouse(SDL_FALSE);
 	SDL_DC_EmulateKeyboard(SDL_TRUE);
 #endif
-#ifdef HAVE_GP2XSDL
+#if defined(HAVE_GP2XSDL) || defined(GCW0) 
 	SDL_ShowCursor(SDL_DISABLE); //For GP2X Open2x
 #endif
 #ifdef FILTERS
@@ -1037,7 +1072,7 @@ void I_GetEvent(void)
 						else firsttimeonmouse = SDL_FALSE;
 						//if (!netgame && !con_destlines) paused = false;
 						if (gamestate == GS_LEVEL)
-							if (!paused) I_ResumeSong(0); //resume it
+							if (!paused) I_ResumeSong(); //resume it
 					}
 					else /*if (!paused)*/
 					{
@@ -1047,7 +1082,7 @@ void I_GetEvent(void)
 						memset(gamekeydown, 0, NUMKEYS);
 						//S_PauseSound();
 						if (gamestate == GS_LEVEL)
-							I_PauseSong(0); //pause it
+							I_PauseSong(); //pause it
 					}
 				}
 				if (MOUSE_MENU)
@@ -1285,7 +1320,7 @@ void I_UpdateNoBlit(void)
 	if (vidSurface->flags&SDL_DOUBLEBUF)
 		SDL_Flip(vidSurface);
 	else if (exposevideo)
-		SDL_UpdateRect(vidSurface, 0, 0, 0, 0);
+		SDL_Flip(vidSurface);
 	exposevideo = SDL_FALSE;
 }
 
@@ -2015,6 +2050,12 @@ void I_StartupGraphics(void)
 #elif defined(_PS3)
 		vid.width = 720;
 		vid.height = 480;
+#elif defined(GCW0)
+		vid.width = 320;
+		vid.height = 240;
+#elif defined(RS90)
+		vid.width = 240;
+		vid.height = 160;
 #else
 		vid.width = BASEVIDWIDTH;
 		vid.height = BASEVIDHEIGHT;

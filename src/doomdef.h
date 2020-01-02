@@ -99,6 +99,9 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+
+#define __BYTE_ORDER __LITTLE_ENDIAN
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -394,7 +397,7 @@ void CONS_Debug(INT32 debugflags, const char *fmt, ...) FUNCDEBUG;
 
 // Things that used to be in dstrings.h
 #define SAVEGAMENAME "srb2sav"
-char savegamename[256];
+extern char savegamename[256];
 
 // m_misc.h
 #ifdef GETTEXT
@@ -498,13 +501,13 @@ extern const char *compdate, *comptime, *comprevision, *compbranch;
 //#define DUMPCONSISTENCY
 
 ///	Polyobject fake flat code
-#define POLYOBJECTS_PLANES
+//#define POLYOBJECTS_PLANES
 
 ///	Improved way of dealing with ping values and a ping limit.
 #define NEWPING
 
 ///	See name of player in your crosshair
-#define SEENAMES
+//#define SEENAMES
 
 ///	Who put weights on my recycler?  ... Inuyasha did.
 ///	\note	XMOD port.
@@ -515,12 +518,12 @@ extern const char *compdate, *comptime, *comprevision, *compbranch;
 ///	    	Most modifications should probably enable this.
 //#define SAVEGAME_OTHERVERSIONS
 
-#if !defined (_NDS) && !defined (_PSP)
+#if !defined (_NDS) && !defined (_PSP) && !defined (GCW0)
 ///	Shuffle's incomplete OpenGL sorting code.
 #define SHUFFLE // This has nothing to do with sorting, why was it disabled?
 #endif
 
-#if !defined (_NDS) && !defined (_PSP)
+#if !defined (_NDS) && !defined (_PSP) && !defined (LOWMEMORY)
 ///	Allow the use of the SOC RESETINFO command.
 ///	\note	Builds that are tight on memory should disable this.
 ///	    	This stops the game from storing backups of the states, sprites, and mobjinfo tables.
@@ -539,7 +542,7 @@ extern const char *compdate, *comptime, *comprevision, *compbranch;
 
 /// Backwards compatibility with musicslots.
 /// \note	You should leave this enabled unless you're working with a future SRB2 version.
-#define MUSICSLOT_COMPATIBILITY
+//#define MUSICSLOT_COMPATIBILITY
 
 /// Handle touching sector specials in P_PlayerAfterThink instead of P_PlayerThink.
 /// \note   Required for proper collision with moving sloped surfaces that have sector specials on them.
@@ -556,6 +559,6 @@ extern const char *compdate, *comptime, *comprevision, *compbranch;
 /// on the bright side it fixes some weird issues with translucent walls
 /// \note	SRB2CB port.
 ///      	SRB2CB itself ported this from PrBoom+
-#define NEWCLIP
+//#define NEWCLIP
 
 #endif // __DOOMDEF__
