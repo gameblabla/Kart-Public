@@ -1,0 +1,55 @@
+CC = /opt/gkdminiplus-toolchain/bin/aarch64-linux-gcc
+
+OUTPUTNAME = srb2kart.elf
+PROFILE = APPLY
+
+DEFINES = -DHAVE_BLUA -DHAVE_CURL -DHAVE_SDL -DSDL -DGKDMINIPLUS -DHAVE_MIXER -DNOHW -DHAVE_THREADS -Isrc -Isrc/blua
+OPT_FLAGS  = -Ofast -fomit-frame-pointer -fipa-pta -fsection-anchors -flto -fdata-sections -ffunction-sections -D_GNU_SOURCE=1 -D_DEFAULT_SOURCE -D_REENTRANT $(shell /opt/gkdminiplus-toolchain/aarch64-buildroot-linux-gnu/sysroot/usr/bin/sdl2-config --cflags)
+OPT_FLAGS += -mtune=cortex-a55 -march=armv8.2-a
+
+CFLAGS = $(DEFINES) $(INCLUDES) $(OPT_FLAGS) -std=gnu11 
+LDFLAGS = -lrt -lSDL2 -lSDL2_mixer -lm -pthread -ldl -lssl -lcrypto -lcurl -lz -flto -s -Wl,--as-needed -Wl,--gc-sections
+
+ifeq ($(PROFILE), YES)
+CFLAGS		+= -fprofile-generate=/storage/srb2_profile
+LDFLAGS		+= -lgcov
+else ifeq ($(PROFILE), APPLY)
+CFLAGS		+= -fprofile-use=.
+endif
+
+OBJS =  \
+src/am_map.o src/b_bot.o src/command.o src/comptime.o src/console.o src/d_clisrv.o src/d_main.o src/d_net.o src/d_netcmd.o src/d_netfil.o src/dehacked.o src/f_finale.o src/f_wipe.o src/filesrch.o src/g_game.o src/g_input.o src/hu_stuff.o src/i_tcp.o src/info.o src/lzf.o src/m_aatree.o src/m_anigif.o src/m_argv.o \
+src/m_bbox.o src/m_cheat.o src/m_cond.o src/m_fixed.o src/m_menu.o src/m_misc.o src/m_queue.o src/m_random.o src/md5.o src/mserv.o src/http-mserv.o src/s_sound.o src/screen.o src/sounds.o src/st_stuff.o src/tables.o src/v_video.o src/w_wad.o src/y_inter.o src/z_zone.o src/r_bsp.o src/string.o \
+src/r_data.o src/r_draw.o src/r_fps.o src/r_main.o src/r_plane.o src/r_segs.o src/r_sky.o src/r_splats.o src/r_things.o src/p_ceilng.o src/p_enemy.o src/p_floor.o src/p_inter.o src/p_lights.o src/p_map.o src/p_maputl.o src/p_mobj.o src/p_polyobj.o src/p_saveg.o src/p_setup.o src/p_sight.o src/p_slopes.o src/p_spec.o src/p_telept.o src/p_tick.o src/p_user.o src/k_kart.o src/i_time.o \
+src/blua/lapi.o src/blua/lauxlib.o src/blua/lbaselib.o src/blua/lcode.o src/blua/ldebug.o src/blua/ldo.o src/blua/ldump.o src/blua/lfunc.o src/blua/lgc.o src/blua/linit.o src/blua/liolib.o src/blua/llex.o src/blua/lmem.o src/blua/lobject.o src/blua/lopcodes.o src/blua/lparser.o src/blua/lstate.o src/blua/lstring.o src/blua/lstrlib.o src/blua/ltable.o src/blua/ltablib.o src/blua/ltm.o src/blua/lundump.o src/blua/lvm.o src/blua/lzio.o
+
+
+OBJS += src/sdl/dosstr.o \
+src/sdl/endtxt.o \
+src/sdl/hwsym_sdl.o \
+src/sdl/i_cdmus.o \
+src/sdl/i_main.o \
+src/sdl/i_net.o \
+src/sdl/i_system.o \
+src/sdl/i_threads.o \
+src/sdl/i_ttf.o \
+src/sdl/i_video.o \
+src/sdl/mixer_sound.o \
+src/sdl/ogl_sdl.o \
+src/sdl/sdl_sound.o \
+
+OBJS += src/lua_baselib.o src/lua_blockmaplib.o src/lua_consolelib.o src/lua_hooklib.o src/lua_hudlib.o src/lua_hudlib_drawlist.o src/lua_infolib.o src/lua_maplib.o src/lua_mathlib.o src/lua_mobjlib.o src/lua_playerlib.o src/lua_script.o src/lua_skinlib.o src/lua_thinkerlib.o
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $< 
+	
+.CC.o:
+	$(CXX) $(CXXFLAGS) -c -o $@ $< 
+	
+all: executable
+
+executable : $(OBJS)
+	$(CC) -o $(OUTPUTNAME) $(OBJS) $(CFLAGS) $(LDFLAGS)
+
+clean:
+	rm $(OBJS) $(OUTPUTNAME)

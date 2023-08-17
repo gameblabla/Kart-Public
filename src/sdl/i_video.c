@@ -87,7 +87,11 @@
 #endif
 
 // maximum number of windowed modes (see windowedModes[][])
+#ifdef GKDMINIPLUS
+#define MAXWINMODES (1)
+#else
 #define MAXWINMODES (18)
+#endif
 
 /**	\brief
 */
@@ -153,6 +157,9 @@ static const char *fallback_resolution_name = "Fallback";
 // windowed video modes from which to choose from.
 static INT32 windowedModes[MAXWINMODES][2] =
 {
+#ifdef GKDMINIPLUS
+	{ 640, 480}, // 1.33,2.00
+#else
 	{1920,1200}, // 1.60,6.00
 	{1920,1080}, // 1.66
 	{1680,1050}, // 1.60,5.25
@@ -171,6 +178,7 @@ static INT32 windowedModes[MAXWINMODES][2] =
 	{ 640, 400}, // 1.60,2.00
 	{ 320, 240}, // 1.33,1.00
 	{ 320, 200}, // 1.60,1.00
+#endif
 };
 
 static void Impl_VideoSetupSDLBuffer(void);
