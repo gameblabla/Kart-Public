@@ -20,6 +20,14 @@
 /// \file
 /// \brief SRB2 system stuff for SDL
 
+#include <errno.h>
+
+#ifdef CMAKECONFIG
+#include "config.h"
+#else
+#include "../config.h.in"
+#endif
+
 #ifndef _WIN32_WCE
 #include <signal.h>
 #endif
@@ -155,9 +163,9 @@ void __set_fpscr(long); // in libgcc / kernel's startup.s?
 //#define DEFAULTSEARCHPATH3 "/pc/home/alam/srb2code/data"
 #elif defined (GP2X)
 #define DEFAULTWADLOCATION1 "/mnt/sd"
-#define DEFAULTWADLOCATION2 "/mnt/sd/SRB2Kart"
+#define DEFAULTWADLOCATION2 "/mnt/sd/SRB2"
 #define DEFAULTWADLOCATION3 "/tmp/mnt/sd"
-#define DEFAULTWADLOCATION4 "/tmp/mnt/sd/SRB2Kart"
+#define DEFAULTWADLOCATION4 "/tmp/mnt/sd/SRB2"
 #define DEFAULTSEARCHPATH1 "/mnt/sd"
 #define DEFAULTSEARCHPATH2 "/tmp/mnt/sd"
 #elif defined (_WII)
@@ -184,10 +192,10 @@ void __set_fpscr(long); // in libgcc / kernel's startup.s?
 #define DEFAULTSEARCHPATH1 "host0:/"
 #define DEFAULTSEARCHPATH2 "ms0:/PSP/GAME/SRB2PSP"
 #elif defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON)
-#define DEFAULTWADLOCATION1 "/usr/local/share/games/SRB2Kart"
-#define DEFAULTWADLOCATION2 "/usr/local/games/SRB2Kart"
-#define DEFAULTWADLOCATION3 "/usr/share/games/SRB2Kart"
-#define DEFAULTWADLOCATION4 "/usr/games/SRB2Kart"
+#define DEFAULTWADLOCATION1 "/usr/local/share/games/SRB2"
+#define DEFAULTWADLOCATION2 "/usr/local/games/SRB2"
+#define DEFAULTWADLOCATION3 "/usr/share/games/SRB2"
+#define DEFAULTWADLOCATION4 "/usr/games/SRB2"
 #define DEFAULTSEARCHPATH1 "/usr/local/games"
 #define DEFAULTSEARCHPATH2 "/usr/games"
 #define DEFAULTSEARCHPATH3 "/usr/local"
@@ -196,21 +204,21 @@ void __set_fpscr(long); // in libgcc / kernel's startup.s?
 #ifdef __GNUC__
 #include <openxdk/debug.h>
 #endif
-#define DEFAULTWADLOCATION1 "c:\\srb2kart"
-#define DEFAULTWADLOCATION2 "d:\\srb2kart"
-#define DEFAULTWADLOCATION3 "e:\\srb2kart"
-#define DEFAULTWADLOCATION4 "f:\\srb2kart"
-#define DEFAULTWADLOCATION5 "g:\\srb2kart"
-#define DEFAULTWADLOCATION6 "h:\\srb2kart"
-#define DEFAULTWADLOCATION7 "i:\\srb2kart"
+#define DEFAULTWADLOCATION1 "c:\\srb2"
+#define DEFAULTWADLOCATION2 "d:\\srb2"
+#define DEFAULTWADLOCATION3 "e:\\srb2"
+#define DEFAULTWADLOCATION4 "f:\\srb2"
+#define DEFAULTWADLOCATION5 "g:\\srb2"
+#define DEFAULTWADLOCATION6 "h:\\srb2"
+#define DEFAULTWADLOCATION7 "i:\\srb2"
 #elif defined (_WIN32_WCE)
 #define NOCWD
 #define NOHOME
-#define DEFAULTWADLOCATION1 "\\Storage Card\\SRB2Kart"
+#define DEFAULTWADLOCATION1 "\\Storage Card\\SRB2DEMO"
 #define DEFAULTSEARCHPATH1 "\\Storage Card"
 #elif defined (_WIN32)
-#define DEFAULTWADLOCATION1 "c:\\games\\srb2kart"
-#define DEFAULTWADLOCATION2 "\\games\\srb2kart"
+#define DEFAULTWADLOCATION1 "c:\\games\\srb2"
+#define DEFAULTWADLOCATION2 "\\games\\srb2"
 #define DEFAULTSEARCHPATH1 "c:\\games"
 #define DEFAULTSEARCHPATH2 "\\games"
 #endif
@@ -290,25 +298,6 @@ static INT32 joystick2_started = 0;
 /**	\brief SDL inof about joystick 2
 */
 SDLJoyInfo_t JoyInfo2;
-
-
-/**	\brief Third joystick up and running
-*/
-static INT32 joystick3_started = 0;
-
-/**	\brief SDL inof about joystick 3
-*/
-SDLJoyInfo_t JoyInfo3;
-
-
-/**	\brief Fourth joystick up and running
-*/
-static INT32 joystick4_started = 0;
-
-/**	\brief SDL inof about joystick 4
-*/
-SDLJoyInfo_t JoyInfo4;
-
 
 #ifdef HAVE_TERMIOS
 static INT32 fdmouse2 = -1;
@@ -701,7 +690,7 @@ static void I_StartupConsole(void)
 
 	if (gotConsole)
 	{
-		SetConsoleTitleA("SRB2Kart Console");
+		SetConsoleTitleA("SRB2 Console");
 		consolevent = SDL_TRUE;
 	}
 
@@ -784,7 +773,7 @@ void I_StartupKeyboard (void)
 void I_OutputMsg(const char *fmt, ...)
 {
 	size_t len;
-	XBOXSTATIC char txt[8192];
+	char txt[8192];
 	va_list  argptr;
 
 #ifdef _arch_dreamcast
@@ -949,28 +938,6 @@ void I_JoyScale2(void)
 	JoyInfo2.scale = Joystick2.bGamepadStyle?1:cv_joyscale2.value;
 }
 
-void I_JoyScale3(void)
-{
-#ifdef GP2X
-	if (JoyInfo3.dev && SDL_JoystickIndex(JoyInfo3.dev) == 0)
-		Joystick.bGamepadStyle = true;
-	else
-#endif
-	Joystick3.bGamepadStyle = cv_joyscale3.value==0;
-	JoyInfo3.scale = Joystick3.bGamepadStyle?1:cv_joyscale3.value;
-}
-
-void I_JoyScale4(void)
-{
-#ifdef GP2X
-	if (JoyInfo4.dev && SDL_JoystickIndex(JoyInfo4.dev) == 0)
-		Joystick.bGamepadStyle = true;
-	else
-#endif
-	Joystick4.bGamepadStyle = cv_joyscale4.value==0;
-	JoyInfo4.scale = Joystick4.bGamepadStyle?1:cv_joyscale4.value;
-}
-
 /**	\brief Joystick 1 buttons states
 */
 static UINT64 lastjoybuttons = 0;
@@ -1020,8 +987,7 @@ static void I_ShutdownJoystick(void)
 
 	joystick_started = 0;
 	JoyReset(&JoyInfo);
-	if (!joystick_started && !joystick2_started && !joystick3_started && !joystick4_started
-		&& SDL_WasInit(SDL_INIT_JOYSTICK) == SDL_INIT_JOYSTICK)
+	if (!joystick_started && !joystick2_started && SDL_WasInit(SDL_INIT_JOYSTICK) == SDL_INIT_JOYSTICK)
 	{
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 		if (cv_usejoystick.value == 0)
@@ -1182,7 +1148,7 @@ static int joy_open(const char *fname)
 	int num_joy = 0;
 	int i;
 
-	if (joystick_started == 0 && joystick2_started == 0 && joystick3_started == 0 && joystick4_started == 0)
+	if (joystick_started == 0 && joystick2_started == 0)
 	{
 		if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
 		{
@@ -1315,8 +1281,7 @@ static void I_ShutdownJoystick2(void)
 	}
 
 	JoyReset(&JoyInfo2);
-	if (!joystick_started && !joystick2_started && !joystick3_started && !joystick4_started
-		&& SDL_WasInit(SDL_INIT_JOYSTICK) == SDL_INIT_JOYSTICK)
+	if (!joystick_started && !joystick2_started && SDL_WasInit(SDL_INIT_JOYSTICK) == SDL_INIT_JOYSTICK)
 	{
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 		if (cv_usejoystick2.value == 0)
@@ -1477,7 +1442,7 @@ static int joy_open2(const char *fname)
 	int num_joy = 0;
 	int i;
 
-	if (joystick_started == 0 && joystick2_started == 0 && joystick3_started == 0 && joystick4_started == 0)
+	if (joystick_started == 0 && joystick2_started == 0)
 	{
 		if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
 		{
@@ -1500,7 +1465,7 @@ static int joy_open2(const char *fname)
 	{
 		JoyReset(&JoyInfo2);
 		//I_ShutdownJoystick();
-		//joy_open2(fname);
+		//joy_open(fname);
 	}
 
 	num_joy = SDL_NumJoysticks();
@@ -1560,592 +1525,6 @@ static int joy_open2(const char *fname)
 	}
 }
 
-//Joystick3
-
-/**	\brief Joystick 3 buttons states
-*/
-static UINT64 lastjoy3buttons = 0;
-
-/**	\brief Joystick 3 hats state
-*/
-static UINT64 lastjoy3hats = 0;
-
-/**	\brief	Shuts down joystick 3
-
-
-	\return	void
-*/
-static void I_ShutdownJoystick3(void)
-{
-	INT32 i;
-	event_t event;
-	event.type = ev_keyup;
-	event.data2 = 0;
-	event.data3 = 0;
-
-	lastjoy3buttons = lastjoy3hats = 0;
-
-	// emulate the up of all joystick buttons
-	for (i = 0; i < JOYBUTTONS; i++)
-	{
-		event.data1 = KEY_3JOY1 + i;
-		D_PostEvent(&event);
-	}
-
-	// emulate the up of all joystick hats
-	for (i = 0; i < JOYHATS*4; i++)
-	{
-		event.data1 = KEY_3HAT1 + i;
-		D_PostEvent(&event);
-	}
-
-	// reset joystick position
-	event.type = ev_joystick3;
-	for (i = 0; i < JOYAXISSET; i++)
-	{
-		event.data1 = i;
-		D_PostEvent(&event);
-	}
-
-	JoyReset(&JoyInfo3);
-	if (!joystick_started && !joystick2_started && !joystick3_started && !joystick4_started
-		&& SDL_WasInit(SDL_INIT_JOYSTICK) == SDL_INIT_JOYSTICK)
-	{
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-		if (cv_usejoystick3.value == 0)
-		{
-			DEBFILE("I_Joystick3: SDL's Joystick system has been shutdown\n");
-		}
-	}
-}
-
-void I_GetJoystick3Events(void)
-{
-	static event_t event = {0,0,0,0};
-	INT32 i = 0;
-	UINT64 joyhats = 0;
-#if 0
-	INT64 joybuttons = 0;
-	INT32 axisx, axisy;
-#endif
-
-	if (!joystick3_started)
-		return;
-
-	if (!JoyInfo3.dev) //I_ShutdownJoystick3();
-		return;
-
-
-#if 0
-	//faB: look for as much buttons as g_input code supports,
-	//  we don't use the others
-	for (i = JoyInfo3.buttons - 1; i >= 0; i--)
-	{
-		joybuttons <<= 1;
-		if (SDL_JoystickGetButton(JoyInfo3.dev,i))
-			joybuttons |= 1;
-	}
-
-	if (joybuttons != lastjoy3buttons)
-	{
-		INT64 j = 1; // keep only bits that changed since last time
-		INT64 newbuttons = joybuttons ^ lastjoy3buttons;
-		lastjoy3buttons = joybuttons;
-
-		for (i = 0; i < JOYBUTTONS; i++, j <<= 1)
-		{
-			if (newbuttons & j) // button changed state?
-			{
-				if (joybuttons & j)
-					event.type = ev_keydown;
-				else
-					event.type = ev_keyup;
-				event.data1 = KEY_3JOY1 + i;
-				D_PostEvent(&event);
-			}
-		}
-	}
-#endif
-
-	for (i = JoyInfo3.hats - 1; i >= 0; i--)
-	{
-		Uint8 hat = SDL_JoystickGetHat(JoyInfo3.dev, i);
-
-		if (hat & SDL_HAT_UP   ) joyhats|=(UINT64)0x1<<(0 + 4*i);
-		if (hat & SDL_HAT_DOWN ) joyhats|=(UINT64)0x1<<(1 + 4*i);
-		if (hat & SDL_HAT_LEFT ) joyhats|=(UINT64)0x1<<(2 + 4*i);
-		if (hat & SDL_HAT_RIGHT) joyhats|=(UINT64)0x1<<(3 + 4*i);
-	}
-
-	if (joyhats != lastjoy3hats)
-	{
-		INT64 j = 1; // keep only bits that changed since last time
-		INT64 newhats = joyhats ^ lastjoy3hats;
-		lastjoy3hats = joyhats;
-
-		for (i = 0; i < JOYHATS*4; i++, j <<= 1)
-		{
-			if (newhats & j) // hat changed state?
-			{
-				if (joyhats & j)
-					event.type = ev_keydown;
-				else
-					event.type = ev_keyup;
-				event.data1 = KEY_3HAT1 + i;
-				D_PostEvent(&event);
-			}
-		}
-	}
-
-#if 0
-	// send joystick axis positions
-	event.type = ev_joystick3;
-
-	for (i = JOYAXISSET - 1; i >= 0; i--)
-	{
-		event.data1 = i;
-		if (i*2 + 1 <= JoyInfo3.axises)
-			axisx = SDL_JoystickGetAxis(JoyInfo3.dev, i*2 + 0);
-		else axisx = 0;
-		if (i*2 + 2 <= JoyInfo3.axises)
-			axisy = SDL_JoystickGetAxis(JoyInfo3.dev, i*2 + 1);
-		else axisy = 0;
-
-#ifdef _arch_dreamcast // -128 to 127
-		axisx = axisx*8;
-		axisy = axisy*8;
-#else // -32768 to 32767
-		axisx = axisx/32;
-		axisy = axisy/32;
-#endif
-
-		if (Joystick3.bGamepadStyle)
-		{
-			// gamepad control type, on or off, live or die
-			if (axisx < -(JOYAXISRANGE/2))
-				event.data2 = -1;
-			else if (axisx > (JOYAXISRANGE/2))
-				event.data2 = 1;
-			else
-				event.data2 = 0;
-			if (axisy < -(JOYAXISRANGE/2))
-				event.data3 = -1;
-			else if (axisy > (JOYAXISRANGE/2))
-				event.data3 = 1;
-			else
-				event.data3 = 0;
-		}
-		else
-		{
-
-			axisx = JoyInfo3.scale?((axisx/JoyInfo3.scale)*JoyInfo3.scale):axisx;
-			axisy = JoyInfo3.scale?((axisy/JoyInfo3.scale)*JoyInfo3.scale):axisy;
-
-#ifdef SDL_JDEADZONE
-			if (-SDL_JDEADZONE <= axisx && axisx <= SDL_JDEADZONE) axisx = 0;
-			if (-SDL_JDEADZONE <= axisy && axisy <= SDL_JDEADZONE) axisy = 0;
-#endif
-
-			// analog control style , just send the raw data
-			event.data2 = axisx; // x axis
-			event.data3 = axisy; // y axis
-		}
-		D_PostEvent(&event);
-	}
-#endif
-
-}
-
-/**	\brief	Open joystick handle
-
-	\param	fname	name of joystick
-
-	\return	axises
-
-
-*/
-static int joy_open3(const char *fname)
-{
-	int joyindex = atoi(fname);
-	int num_joy = 0;
-	int i;
-
-	if (joystick_started == 0 && joystick2_started == 0 && joystick3_started == 0 && joystick4_started == 0)
-	{
-		if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
-		{
-			CONS_Printf(M_GetText("Couldn't initialize joystick: %s\n"), SDL_GetError());
-			return -1;
-		}
-		else
-			num_joy = SDL_NumJoysticks();
-
-		if (num_joy < joyindex)
-		{
-			CONS_Printf(M_GetText("Cannot use joystick #%d/(%s), it doesn't exist\n"),joyindex,fname);
-			for (i = 0; i < num_joy; i++)
-				CONS_Printf("#%d/(%s)\n", i+1, SDL_JoystickName(i));
-			I_ShutdownJoystick3();
-			return -1;
-		}
-	}
-	else
-	{
-		JoyReset(&JoyInfo3);
-		//I_ShutdownJoystick();
-		//joy_open3(fname);
-	}
-
-	num_joy = SDL_NumJoysticks();
-
-	if (joyindex <= 0 || num_joy == 0 || JoyInfo3.oldjoy == joyindex)
-	{
-//		I_OutputMsg("Unable to use that joystick #(%s), non-number\n",fname);
-		if (num_joy != 0)
-		{
-			CONS_Printf(M_GetText("Found %d joysticks on this system\n"), num_joy);
-			for (i = 0; i < num_joy; i++)
-				CONS_Printf("#%d/(%s)\n", i+1, SDL_JoystickName(i));
-		}
-		else
-			CONS_Printf("%s", M_GetText("Found no joysticks on this system\n"));
-		if (joyindex <= 0 || num_joy == 0) return 0;
-	}
-
-	JoyInfo3.dev = SDL_JoystickOpen(joyindex-1);
-	CONS_Printf(M_GetText("Joystick3: %s\n"), SDL_JoystickName(joyindex-1));
-
-	if (!JoyInfo3.dev)
-	{
-		CONS_Printf(M_GetText("Couldn't open joystick3: %s\n"), SDL_GetError());
-		I_ShutdownJoystick3();
-		return -1;
-	}
-	else
-	{
-		JoyInfo3.axises = SDL_JoystickNumAxes(JoyInfo3.dev);
-		if (JoyInfo3.axises > JOYAXISSET*2)
-			JoyInfo3.axises = JOYAXISSET*2;
-/*		if (joyaxes < 2)
-		{
-			I_OutputMsg("Not enought axes?\n");
-			I_ShutdownJoystick3();
-			return 0;
-		}*/
-
-		JoyInfo3.buttons = SDL_JoystickNumButtons(JoyInfo3.dev);
-		if (JoyInfo3.buttons > JOYBUTTONS)
-			JoyInfo3.buttons = JOYBUTTONS;
-
-#ifdef DC
-		JoyInfo3.hats = 0;
-#else
-		JoyInfo3.hats = SDL_JoystickNumHats(JoyInfo3.dev);
-		if (JoyInfo3.hats > JOYHATS)
-			JoyInfo3.hats = JOYHATS;
-
-		JoyInfo3.balls = SDL_JoystickNumBalls(JoyInfo3.dev);
-#endif
-
-		//Joystick.bGamepadStyle = !stricmp(SDL_JoystickName(SDL_JoystickIndex(JoyInfo3.dev)), "pad");
-
-		return JoyInfo3.axises;
-	}
-}
-
-//Joystick4
-
-/**	\brief Joystick 4 buttons states
-*/
-static UINT64 lastjoy4buttons = 0;
-
-/**	\brief Joystick 4 hats state
-*/
-static UINT64 lastjoy4hats = 0;
-
-/**	\brief	Shuts down joystick 4
-
-
-	\return	void
-*/
-static void I_ShutdownJoystick4(void)
-{
-	INT32 i;
-	event_t event;
-	event.type = ev_keyup;
-	event.data2 = 0;
-	event.data3 = 0;
-
-	lastjoy4buttons = lastjoy4hats = 0;
-
-	// emulate the up of all joystick buttons
-	for (i = 0; i < JOYBUTTONS; i++)
-	{
-		event.data1 = KEY_4JOY1 + i;
-		D_PostEvent(&event);
-	}
-
-	// emulate the up of all joystick hats
-	for (i = 0; i < JOYHATS*4; i++)
-	{
-		event.data1 = KEY_4HAT1 + i;
-		D_PostEvent(&event);
-	}
-
-	// reset joystick position
-	event.type = ev_joystick4;
-	for (i = 0; i < JOYAXISSET; i++)
-	{
-		event.data1 = i;
-		D_PostEvent(&event);
-	}
-
-	JoyReset(&JoyInfo4);
-	if (!joystick_started && !joystick2_started && !joystick3_started && !joystick4_started
-		&& SDL_WasInit(SDL_INIT_JOYSTICK) == SDL_INIT_JOYSTICK)
-	{
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-		if (cv_usejoystick4.value == 0)
-		{
-			DEBFILE("I_Joystick3: SDL's Joystick system has been shutdown\n");
-		}
-	}
-}
-
-void I_GetJoystick4Events(void)
-{
-	static event_t event = {0,0,0,0};
-	INT32 i = 0;
-	UINT64 joyhats = 0;
-#if 0
-	INT64 joybuttons = 0;
-	INT32 axisx, axisy;
-#endif
-
-	if (!joystick4_started)
-		return;
-
-	if (!JoyInfo4.dev) //I_ShutdownJoystick4();
-		return;
-
-
-#if 0
-	//faB: look for as much buttons as g_input code supports,
-	//  we don't use the others
-	for (i = JoyInfo4.buttons - 1; i >= 0; i--)
-	{
-		joybuttons <<= 1;
-		if (SDL_JoystickGetButton(JoyInfo4.dev,i))
-			joybuttons |= 1;
-	}
-
-	if (joybuttons != lastjoy4buttons)
-	{
-		INT64 j = 1; // keep only bits that changed since last time
-		INT64 newbuttons = joybuttons ^ lastjoy4buttons;
-		lastjoy4buttons = joybuttons;
-
-		for (i = 0; i < JOYBUTTONS; i++, j <<= 1)
-		{
-			if (newbuttons & j) // button changed state?
-			{
-				if (joybuttons & j)
-					event.type = ev_keydown;
-				else
-					event.type = ev_keyup;
-				event.data1 = KEY_4JOY1 + i;
-				D_PostEvent(&event);
-			}
-		}
-	}
-#endif
-
-	for (i = JoyInfo4.hats - 1; i >= 0; i--)
-	{
-		Uint8 hat = SDL_JoystickGetHat(JoyInfo4.dev, i);
-
-		if (hat & SDL_HAT_UP   ) joyhats|=(UINT64)0x1<<(0 + 4*i);
-		if (hat & SDL_HAT_DOWN ) joyhats|=(UINT64)0x1<<(1 + 4*i);
-		if (hat & SDL_HAT_LEFT ) joyhats|=(UINT64)0x1<<(2 + 4*i);
-		if (hat & SDL_HAT_RIGHT) joyhats|=(UINT64)0x1<<(3 + 4*i);
-	}
-
-	if (joyhats != lastjoy4hats)
-	{
-		INT64 j = 1; // keep only bits that changed since last time
-		INT64 newhats = joyhats ^ lastjoy4hats;
-		lastjoy4hats = joyhats;
-
-		for (i = 0; i < JOYHATS*4; i++, j <<= 1)
-		{
-			if (newhats & j) // hat changed state?
-			{
-				if (joyhats & j)
-					event.type = ev_keydown;
-				else
-					event.type = ev_keyup;
-				event.data1 = KEY_4HAT1 + i;
-				D_PostEvent(&event);
-			}
-		}
-	}
-
-#if 0
-	// send joystick axis positions
-	event.type = ev_joystick4;
-
-	for (i = JOYAXISSET - 1; i >= 0; i--)
-	{
-		event.data1 = i;
-		if (i*2 + 1 <= JoyInfo4.axises)
-			axisx = SDL_JoystickGetAxis(JoyInfo4.dev, i*2 + 0);
-		else axisx = 0;
-		if (i*2 + 2 <= JoyInfo4.axises)
-			axisy = SDL_JoystickGetAxis(JoyInfo4.dev, i*2 + 1);
-		else axisy = 0;
-
-#ifdef _arch_dreamcast // -128 to 127
-		axisx = axisx*8;
-		axisy = axisy*8;
-#else // -32768 to 32767
-		axisx = axisx/32;
-		axisy = axisy/32;
-#endif
-
-		if (Joystick4.bGamepadStyle)
-		{
-			// gamepad control type, on or off, live or die
-			if (axisx < -(JOYAXISRANGE/2))
-				event.data2 = -1;
-			else if (axisx > (JOYAXISRANGE/2))
-				event.data2 = 1;
-			else
-				event.data2 = 0;
-			if (axisy < -(JOYAXISRANGE/2))
-				event.data3 = -1;
-			else if (axisy > (JOYAXISRANGE/2))
-				event.data3 = 1;
-			else
-				event.data3 = 0;
-		}
-		else
-		{
-
-			axisx = JoyInfo4.scale?((axisx/JoyInfo4.scale)*JoyInfo4.scale):axisx;
-			axisy = JoyInfo4.scale?((axisy/JoyInfo4.scale)*JoyInfo4.scale):axisy;
-
-#ifdef SDL_JDEADZONE
-			if (-SDL_JDEADZONE <= axisx && axisx <= SDL_JDEADZONE) axisx = 0;
-			if (-SDL_JDEADZONE <= axisy && axisy <= SDL_JDEADZONE) axisy = 0;
-#endif
-
-			// analog control style , just send the raw data
-			event.data2 = axisx; // x axis
-			event.data3 = axisy; // y axis
-		}
-		D_PostEvent(&event);
-	}
-#endif
-
-}
-
-/**	\brief	Open joystick handle
-
-	\param	fname	name of joystick
-
-	\return	axises
-
-
-*/
-static int joy_open4(const char *fname)
-{
-	int joyindex = atoi(fname);
-	int num_joy = 0;
-	int i;
-
-	if (joystick_started == 0 && joystick2_started == 0 && joystick3_started == 0 && joystick4_started == 0)
-	{
-		if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
-		{
-			CONS_Printf(M_GetText("Couldn't initialize joystick: %s\n"), SDL_GetError());
-			return -1;
-		}
-		else
-			num_joy = SDL_NumJoysticks();
-
-		if (num_joy < joyindex)
-		{
-			CONS_Printf(M_GetText("Cannot use joystick #%d/(%s), it doesn't exist\n"),joyindex,fname);
-			for (i = 0; i < num_joy; i++)
-				CONS_Printf("#%d/(%s)\n", i+1, SDL_JoystickName(i));
-			I_ShutdownJoystick3();
-			return -1;
-		}
-	}
-	else
-	{
-		JoyReset(&JoyInfo4);
-		//I_ShutdownJoystick();
-		//joy_open4(fname);
-	}
-
-	num_joy = SDL_NumJoysticks();
-
-	if (joyindex <= 0 || num_joy == 0 || JoyInfo4.oldjoy == joyindex)
-	{
-//		I_OutputMsg("Unable to use that joystick #(%s), non-number\n",fname);
-		if (num_joy != 0)
-		{
-			CONS_Printf(M_GetText("Found %d joysticks on this system\n"), num_joy);
-			for (i = 0; i < num_joy; i++)
-				CONS_Printf("#%d/(%s)\n", i+1, SDL_JoystickName(i));
-		}
-		else
-			CONS_Printf("%s", M_GetText("Found no joysticks on this system\n"));
-		if (joyindex <= 0 || num_joy == 0) return 0;
-	}
-
-	JoyInfo4.dev = SDL_JoystickOpen(joyindex-1);
-	CONS_Printf(M_GetText("Joystick4: %s\n"), SDL_JoystickName(joyindex-1));
-
-	if (!JoyInfo4.dev)
-	{
-		CONS_Printf(M_GetText("Couldn't open joystick4: %s\n"), SDL_GetError());
-		I_ShutdownJoystick4();
-		return -1;
-	}
-	else
-	{
-		JoyInfo4.axises = SDL_JoystickNumAxes(JoyInfo4.dev);
-		if (JoyInfo4.axises > JOYAXISSET*2)
-			JoyInfo4.axises = JOYAXISSET*2;
-/*		if (joyaxes < 2)
-		{
-			I_OutputMsg("Not enought axes?\n");
-			I_ShutdownJoystick4();
-			return 0;
-		}*/
-
-		JoyInfo4.buttons = SDL_JoystickNumButtons(JoyInfo4.dev);
-		if (JoyInfo4.buttons > JOYBUTTONS)
-			JoyInfo4.buttons = JOYBUTTONS;
-
-#ifdef DC
-		JoyInfo4.hats = 0;
-#else
-		JoyInfo4.hats = SDL_JoystickNumHats(JoyInfo4.dev);
-		if (JoyInfo4.hats > JOYHATS)
-			JoyInfo4.hats = JOYHATS;
-
-		JoyInfo4.balls = SDL_JoystickNumBalls(JoyInfo4.dev);
-#endif
-
-		//Joystick.bGamepadStyle = !stricmp(SDL_JoystickName(SDL_JoystickIndex(JoyInfo4.dev)), "pad");
-
-		return JoyInfo4.axises;
-	}
-}
-
 //
 // I_InitJoystick
 //
@@ -2181,32 +1560,11 @@ void I_InitJoystick2(void)
 
 void I_InitJoystick3(void)
 {
-	I_ShutdownJoystick3();
-	if (!strcmp(cv_usejoystick3.string, "0") || M_CheckParm("-nojoy"))
-		return;
-	if (joy_open3(cv_usejoystick3.string) != -1)
-		JoyInfo3.oldjoy = atoi(cv_usejoystick3.string);
-	else
-	{
-		cv_usejoystick3.value = 0;
-		return;
-	}
-	joystick3_started = 1;
 }
 
 void I_InitJoystick4(void)
 {
-	I_ShutdownJoystick4();
-	if (!strcmp(cv_usejoystick4.string, "0") || M_CheckParm("-nojoy"))
-		return;
-	if (joy_open4(cv_usejoystick4.string) != -1)
-		JoyInfo4.oldjoy = atoi(cv_usejoystick4.string);
-	else
-	{
-		cv_usejoystick4.value = 0;
-		return;
-	}
-	joystick4_started = 1;
+
 }
 
 static void I_ShutdownInput(void)
@@ -2215,8 +1573,6 @@ static void I_ShutdownInput(void)
 	{
 		JoyReset(&JoyInfo);
 		JoyReset(&JoyInfo2);
-		JoyReset(&JoyInfo3);
-		JoyReset(&JoyInfo4);
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 	}
 
@@ -2242,22 +1598,7 @@ const char *I_GetJoyName(INT32 joyindex)
 {
 	const char *tempname = NULL;
 	joyindex--; //SDL's Joystick System starts at 0, not 1
-	if (SDL_WasInit(SDL_INIT_JOYSTICK) == 0)
-	{
-		if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) != -1)
-		{
-			tempname = SDL_JoystickNameForIndex(joyindex);
-			if (tempname)
-				strncpy(joyname, tempname, 255);
-		}
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-	}
-	else
-	{
-		tempname = SDL_JoystickNameForIndex(joyindex);
-		if (tempname)
-			strncpy(joyname, tempname, 255);
-	}
+	strncpy(joyname, "YES", 255);
 	return joyname;
 }
 
@@ -2333,8 +1674,8 @@ void I_UpdateMumble(const mobj_t *mobj, const listener_t listener)
 		return;
 
 	if(mumble->uiVersion != 2) {
-		wcsncpy(mumble->name, L"SRB2Kart "VERSIONSTRING, 256);
-		wcsncpy(mumble->description, L"Sonic Robo Blast 2 Kart with integrated Mumble Link support.", 2048);
+		wcsncpy(mumble->name, L"SRB2 "VERSIONSTRING, 256);
+		wcsncpy(mumble->description, L"Sonic Robo Blast 2 with integrated Mumble Link support.", 2048);
 		mumble->uiVersion = 2;
 	}
 	mumble->uiTick++;
@@ -2737,20 +2078,6 @@ void I_Tactile2(FFType pFFType, const JoyFF_t *FFEffect)
 	(void)FFEffect;
 }
 
-void I_Tactile3(FFType pFFType, const JoyFF_t *FFEffect)
-{
-	// UNUSED.
-	(void)pFFType;
-	(void)FFEffect;
-}
-
-void I_Tactile4(FFType pFFType, const JoyFF_t *FFEffect)
-{
-	// UNUSED.
-	(void)pFFType;
-	(void)FFEffect;
-}
-
 /**	\brief empty ticcmd for player 1
 */
 static ticcmd_t emptycmd;
@@ -2787,7 +2114,7 @@ ticcmd_t *I_BaseTiccmd4(void)
 	return &emptycmd4;
 }
 
-#if (defined (_WIN32) && !defined (_WIN32_WCE)) && !defined (_XBOX)
+#if defined (_WIN32)
 static HMODULE winmm = NULL;
 static DWORD starttickcount = 0; // hack for win2k time bug
 static p_timeGetTime pfntimeGetTime = NULL;
@@ -2799,9 +2126,11 @@ static p_timeGetTime pfntimeGetTime = NULL;
 // but lower precision on Windows NT
 // ---------
 
-tic_t I_GetTime(void)
+DWORD TimeFunction(int requested_frequency)
 {
-	tic_t newtics = 0;
+	DWORD newtics = 0;
+	// this var acts as a multiplier if sub-millisecond precision is asked but is not available
+	int excess_frequency = requested_frequency / 1000;
 
 	if (!starttickcount) // high precision timer
 	{
@@ -2821,7 +2150,7 @@ tic_t I_GetTime(void)
 
 		if (frequency.LowPart && QueryPerformanceCounter(&currtime))
 		{
-			newtics = (INT32)((currtime.QuadPart - basetime.QuadPart) * NEWTICRATE
+			newtics = (INT32)((currtime.QuadPart - basetime.QuadPart) * requested_frequency
 				/ frequency.QuadPart);
 		}
 		else if (pfntimeGetTime)
@@ -2829,11 +2158,19 @@ tic_t I_GetTime(void)
 			currtime.LowPart = pfntimeGetTime();
 			if (!basetime.LowPart)
 				basetime.LowPart = currtime.LowPart;
-			newtics = ((currtime.LowPart - basetime.LowPart)/(1000/NEWTICRATE));
+			if (requested_frequency > 1000)
+				newtics = currtime.LowPart - basetime.LowPart * excess_frequency;
+			else
+				newtics = (currtime.LowPart - basetime.LowPart)/(1000/requested_frequency);
 		}
 	}
 	else
-		newtics = (GetTickCount() - starttickcount)/(1000/NEWTICRATE);
+	{
+		if (requested_frequency > 1000)
+			newtics = (GetTickCount() - starttickcount) * excess_frequency;
+		else
+			newtics = (GetTickCount() - starttickcount)/(1000/requested_frequency);
+	}
 
 	return newtics;
 }
@@ -2843,7 +2180,7 @@ static void I_ShutdownTimer(void)
 	pfntimeGetTime = NULL;
 	if (winmm)
 	{
-		p_timeEndPeriod pfntimeEndPeriod = (p_timeEndPeriod)GetProcAddress(winmm, "timeEndPeriod");
+		p_timeEndPeriod pfntimeEndPeriod = (p_timeEndPeriod)(LPVOID)GetProcAddress(winmm, "timeEndPeriod");
 		if (pfntimeEndPeriod)
 			pfntimeEndPeriod(1);
 		FreeLibrary(winmm);
@@ -2855,14 +2192,16 @@ static void I_ShutdownTimer(void)
 // I_GetTime
 // returns time in 1/TICRATE second tics
 //
-tic_t I_GetTime (void)
+
+// millisecond precision only
+int TimeFunction(int requested_frequency)
 {
 #ifdef _arch_dreamcast
 	static Uint64 basetime = 0;
 	       Uint64 ticks = timer_ms_gettime64(); //using timer_ms_gettime64 instand of SDL_GetTicks for the Dreamcast
 #else
-	static Uint32 basetime = 0;
-	       Uint32 ticks = SDL_GetTicks();
+	static Uint64 basetime = 0;
+	       Uint64 ticks = SDL_GetTicks();
 #endif
 
 	if (!basetime)
@@ -2870,53 +2209,136 @@ tic_t I_GetTime (void)
 
 	ticks -= basetime;
 
-	ticks = (ticks*TICRATE);
+	ticks = (ticks*requested_frequency);
 
-#if 0 //#ifdef _WIN32_WCE
-	ticks = (ticks/10);
-#else
 	ticks = (ticks/1000);
-#endif
 
-	return (tic_t)ticks;
+	return ticks;
 }
 #endif
+
+/*
+tic_t I_GetTime(void)
+{
+	return TimeFunction(NEWTICRATE);
+}*/
+#define MY_SDL_US_PER_SECOND   1000000
+
+static Uint64 timer_frequency;
+
+precise_t I_GetPreciseTime(void)
+{
+	return 0;
+}
+
+UINT64 I_GetPrecisePrecision(void)
+{
+	return 1000000;
+}
+
+UINT32 I_GetRefreshRate(void)
+{
+	// Moved to VID_GetRefreshRate.
+	// Precalculating it like that won't work as
+	// well for windowed mode since you can drag
+	// the window around, but very slow PCs might have
+	// trouble querying mode over and over again.
+	return 60;
+}
+
+void I_Tactile3(FFType pFFType, const JoyFF_t *FFEffect)
+{
+	// UNUSED.
+	(void)pFFType;
+	(void)FFEffect;
+}
+
+void I_Tactile4(FFType pFFType, const JoyFF_t *FFEffect)
+{
+	// UNUSED.
+	(void)pFFType;
+	(void)FFEffect;
+}
+
+void I_JoyScale3(void)
+{
+}
+
+void I_JoyScale4(void)
+{
+}
+
+#include "../r_fps.h"
+
+static UINT32 frame_rate;
+
+static double frame_frequency;
+static UINT64 frame_epoch;
+static double elapsed_frames;
+
+
+static void I_InitFrameTime(const UINT64 now, const UINT32 cap)
+{
+	frame_rate = cap;
+	frame_epoch = now;
+
+	//elapsed_frames = 0.0;
+
+	if (frame_rate == 0)
+	{
+		// Shouldn't be used, but just in case...?
+		frame_frequency = 1.0;
+		return;
+	}
+
+	frame_frequency = timer_frequency / (double)frame_rate;
+}
+
+double I_GetFrameTime(void)
+{
+	const UINT64 now = MY_SDL_US_PER_SECOND;
+	const UINT32 cap = R_GetFramerateCap();
+
+	if (cap != frame_rate)
+	{
+		// Maybe do this in a OnChange function for cv_fpscap?
+		I_InitFrameTime(now, cap);
+	}
+
+	if (frame_rate == 0)
+	{
+		// Always advance a frame.
+		elapsed_frames += 1.0;
+	}
+	else
+	{
+		elapsed_frames += (now - frame_epoch) / frame_frequency;
+	}
+
+	frame_epoch = now; // moving epoch
+	return elapsed_frames;
+}
+
 
 //
 //I_StartupTimer
 //
 void I_StartupTimer(void)
 {
-#if (defined (_WIN32) && !defined (_WIN32_WCE)) && !defined (_XBOX)
-	// for win2k time bug
-	if (M_CheckParm("-gettickcount"))
-	{
-		starttickcount = GetTickCount();
-		CONS_Printf("%s", M_GetText("Using GetTickCount()\n"));
-	}
-	winmm = LoadLibraryA("winmm.dll");
-	if (winmm)
-	{
-		p_timeEndPeriod pfntimeBeginPeriod = (p_timeEndPeriod)GetProcAddress(winmm, "timeBeginPeriod");
-		if (pfntimeBeginPeriod)
-			pfntimeBeginPeriod(1);
-		pfntimeGetTime = (p_timeGetTime)GetProcAddress(winmm, "timeGetTime");
-	}
-	I_AddExitFunc(I_ShutdownTimer);
-#elif 0 //#elif !defined (_arch_dreamcast) && !defined(GP2X) // the DC have it own timer and GP2X have broken pthreads?
 	if (SDL_InitSubSystem(SDL_INIT_TIMER) < 0)
 		I_Error("SRB2: Needs SDL_Timer, Error: %s", SDL_GetError());
-#endif
+
+	timer_frequency = MY_SDL_US_PER_SECOND;
+
+	I_InitFrameTime(0, R_GetFramerateCap());
+	elapsed_frames  = 0.0;
 }
 
 
 
-void I_Sleep(void)
+void I_Sleep(UINT32 ms)
 {
-#if !(defined (_arch_dreamcast) || defined (_XBOX))
-	if (cv_sleep.value > 0)
-		SDL_Delay(cv_sleep.value);
-#endif
+	SDL_Delay(ms);
 }
 
 INT32 I_StartupSystem(void)
@@ -2978,11 +2400,11 @@ void I_Quit(void)
 #ifndef NONET
 	D_SaveBan(); // save the ban list
 #endif
-	G_SaveGameData(); // Tails 12-08-2002
+	G_SaveGameData(1); // Tails 12-08-2002
 	//added:16-02-98: when recording a demo, should exit using 'q' key,
 	//        but sometimes we forget and use 'F10'.. so save here too.
 
-	if (demorecording)
+	if (demo.recording)
 		G_CheckDemoStatus();
 	if (metalrecording)
 		G_StopMetalRecording();
@@ -2990,7 +2412,6 @@ void I_Quit(void)
 	D_QuitNetGame();
 	I_ShutdownMusic();
 	I_ShutdownSound();
-	I_ShutdownCD();
 	// use this for 1.28 19990220 by Kin
 	I_ShutdownGraphics();
 	I_ShutdownInput();
@@ -3043,9 +2464,7 @@ static boolean shutdowning = false;
 void I_Error(const char *error, ...)
 {
 	va_list argptr;
-#if (defined (MAC_ALERT) || defined (_WIN32) || (defined (_WIN32_WCE) && !defined (__GNUC__))) && !defined (_XBOX)
 	char buffer[8192];
-#endif
 
 	// recursive error detecting
 	if (shutdowning)
@@ -3059,88 +2478,49 @@ void I_Error(const char *error, ...)
 		if (errorcount == 3)
 			I_ShutdownSound();
 		if (errorcount == 4)
-			I_ShutdownCD();
-		if (errorcount == 5)
 			I_ShutdownGraphics();
-		if (errorcount == 6)
+		if (errorcount == 5)
 			I_ShutdownInput();
-		if (errorcount == 7)
+		if (errorcount == 6)
 			I_ShutdownSystem();
-#ifndef _arch_dreamcast
-		if (errorcount == 8)
+		if (errorcount == 7)
 			SDL_Quit();
-#endif
-		if (errorcount == 9)
+		if (errorcount == 8)
 		{
 			M_SaveConfig(NULL);
-			G_SaveGameData();
+			G_SaveGameData(1);
 		}
 		if (errorcount > 20)
 		{
-#ifdef MAC_ALERT
 			va_start(argptr, error);
 			vsprintf(buffer, error, argptr);
 			va_end(argptr);
-			// 2004-03-03 AJR Since the Mac user is most likely double clicking to run the game, give them a panel.
-			MacShowAlert("Recursive Error", buffer, "Quit", NULL, NULL);
-#elif (defined (_WIN32) || (defined (_WIN32_WCE)) && !defined (__GNUC__)) && !defined (_XBOX)
-			va_start(argptr,error);
-			vsprintf(buffer, error, argptr);
-			va_end(argptr);
-#ifndef _WIN32_WCE
-			{
-				HANDLE co = GetStdHandle(STD_OUTPUT_HANDLE);
-				DWORD bytesWritten;
-				if (co != INVALID_HANDLE_VALUE)
-				{
-					if (GetFileType(co) == FILE_TYPE_CHAR && GetConsoleMode(co, &bytesWritten))
-						WriteConsoleA(co, buffer, (DWORD)strlen(buffer), NULL, NULL);
-					else
-						WriteFile(co, buffer, (DWORD)strlen(buffer), &bytesWritten, NULL);
-				}
-			}
-#endif
-			OutputDebugStringA(buffer);
-			MessageBoxA(vid.WndParent, buffer, "SRB2 Recursive Error", MB_OK|MB_ICONERROR);
-#else
-			// Don't print garbage
-			va_start(argptr, error);
-			if (!framebuffer)
-				vfprintf (stderr, error, argptr);
-			va_end(argptr);
-#endif
+			// Implement message box with SDL_ShowSimpleMessageBox,
+			// which should fail gracefully if it can't put a message box up
+			// on the target system
+			printf("Recursive error\n");
 			W_Shutdown();
-#ifdef GP2X
-			chdir("/usr/gp2x");
-			execl("/usr/gp2x/gp2xmenu", "/usr/gp2x/gp2xmenu", NULL);
-#endif
 			exit(-1); // recursive errors detected
 		}
 	}
-	shutdowning = true;
-	I_ShutdownConsole();
-#ifndef MAC_ALERT
-	// Message first.
-	va_start(argptr,error);
-	if (!framebuffer)
-	{
-		fprintf(stderr, "Error: ");
-		vfprintf(stderr,error,argptr);
-		fprintf(stderr, "\n");
-	}
-	va_end(argptr);
 
-	if (!framebuffer)
-		fflush(stderr);
-#endif
+	shutdowning = true;
+
+	// Display error message in the console before we start shutting it down
+	va_start(argptr, error);
+	vsprintf(buffer, error, argptr);
+	va_end(argptr);
+	I_OutputMsg("\nI_Error(): %s\n", buffer);
+	// ---
+
 	M_SaveConfig(NULL); // save game config, cvars..
 #ifndef NONET
 	D_SaveBan(); // save the ban list
 #endif
-	G_SaveGameData(); // Tails 12-08-2002
+	G_SaveGameData(1); // Tails 12-08-2002
 
 	// Shutdown. Here might be other errors.
-	if (demorecording)
+	if (demo.recording)
 		G_CheckDemoStatus();
 	if (metalrecording)
 		G_StopMetalRecording();
@@ -3148,29 +2528,28 @@ void I_Error(const char *error, ...)
 	D_QuitNetGame();
 	I_ShutdownMusic();
 	I_ShutdownSound();
-	I_ShutdownCD();
 	// use this for 1.28 19990220 by Kin
 	I_ShutdownGraphics();
 	I_ShutdownInput();
 	I_ShutdownSystem();
-#ifndef _arch_dreamcast
 	SDL_Quit();
-#endif
-#ifdef MAC_ALERT
-	va_start(argptr, error);
-	vsprintf(buffer, error, argptr);
-	va_end(argptr);
-	// 2004-03-03 AJR Since the Mac user is most likely double clicking to run the game, give them a panel.
-	MacShowAlert("Critical Error", buffer, "Quit", NULL, NULL);
-#endif
+
+	// Implement message box with SDL_ShowSimpleMessageBox,
+	// which should fail gracefully if it can't put a message box up
+	// on the target system
+	printf("SRB2 Error\n");
+	// Note that SDL_ShowSimpleMessageBox does *not* require SDL to be
+	// initialized at the time, so calling it after SDL_Quit() is
+	// perfectly okay! In addition, we do this on purpose so the
+	// fullscreen window is closed before displaying the error message
+	// in case the fullscreen window blocks it for some absurd reason.
+
 	W_Shutdown();
+
 #if defined (PARANOIA) && defined (__CYGWIN__)
-		*(INT32 *)2 = 4; //Alam: Debug!
+	*(INT32 *)2 = 4; //Alam: Debug!
 #endif
-#ifdef GP2X
-	chdir("/usr/gp2x");
-	execl("/usr/gp2x/gp2xmenu", "/usr/gp2x/gp2xmenu", NULL);
-#endif
+
 	exit(-1);
 }
 
@@ -3219,6 +2598,48 @@ void I_RemoveExitFunc(void (*func)())
 	}
 }
 
+#if !(defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON))
+static void Shittycopyerror(const char *name)
+{
+	I_OutputMsg(
+			"Error copying log file: %s: %s\n",
+			name,
+			strerror(errno)
+	);
+}
+
+static void Shittylogcopy(void)
+{
+	char buf[8192];
+	FILE *fp;
+	size_t r;
+	if (fseek(logstream, 0, SEEK_SET) == -1)
+	{
+		Shittycopyerror("fseek");
+	}
+	else if (( fp = fopen(logfilename, "wt") ))
+	{
+		while (( r = fread(buf, 1, sizeof buf, logstream) ))
+		{
+			if (fwrite(buf, 1, r, fp) < r)
+			{
+				Shittycopyerror("fwrite");
+				break;
+			}
+		}
+		if (ferror(logstream))
+		{
+			Shittycopyerror("fread");
+		}
+		fclose(fp);
+	}
+	else
+	{
+		Shittycopyerror(logfilename);
+	}
+}
+#endif/*!(defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON))*/
+
 //
 //  Closes down everything. This includes restoring the initial
 //  palette and video mode, and removing whatever mouse, keyboard, and
@@ -3230,12 +2651,20 @@ void I_ShutdownSystem(void)
 {
 	INT32 c;
 
+#ifndef NEWSIGNALHANDLER
+	I_ShutdownConsole();
+#endif
+
 	for (c = MAX_QUIT_FUNCS-1; c >= 0; c--)
 		if (quit_funcs[c])
 			(*quit_funcs[c])();
-#ifdef  LOGMESSAGES
+#ifdef LOGMESSAGES
 	if (logstream)
 	{
+		I_OutputMsg("I_ShutdownSystem(): end of logstream.\n");
+#if !(defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON))
+		Shittylogcopy();
+#endif
 		fclose(logstream);
 		logstream = NULL;
 	}
@@ -3245,34 +2674,32 @@ void I_ShutdownSystem(void)
 
 void I_GetDiskFreeSpace(INT64 *freespace)
 {
-#if defined (_arch_dreamcast) || defined (_PSP)
-	*freespace = 0;
-#elif defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON)
-#if defined (SOLARIS) || defined (__HAIKU__) || defined (_WII) || defined (_PS3)
+#if defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON)
+#if defined (SOLARIS) || defined (__HAIKU__)
 	*freespace = INT32_MAX;
 	return;
 #else // Both Linux and BSD have this, apparently.
 	struct statfs stfs;
-	if (statfs(".", &stfs) == -1)
+	if (statfs(srb2home, &stfs) == -1)
 	{
 		*freespace = INT32_MAX;
 		return;
 	}
 	*freespace = stfs.f_bavail * stfs.f_bsize;
 #endif
-#elif (defined (_WIN32) && !defined (_WIN32_WCE)) && !defined (_XBOX)
+#elif defined (_WIN32)
 	static p_GetDiskFreeSpaceExA pfnGetDiskFreeSpaceEx = NULL;
 	static boolean testwin95 = false;
 	ULARGE_INTEGER usedbytes, lfreespace;
 
 	if (!testwin95)
 	{
-		pfnGetDiskFreeSpaceEx = (p_GetDiskFreeSpaceExA)GetProcAddress(GetModuleHandleA("kernel32.dll"), "GetDiskFreeSpaceExA");
+		pfnGetDiskFreeSpaceEx = (p_GetDiskFreeSpaceExA)(LPVOID)GetProcAddress(GetModuleHandleA("kernel32.dll"), "GetDiskFreeSpaceExA");
 		testwin95 = true;
 	}
 	if (pfnGetDiskFreeSpaceEx)
 	{
-		if (pfnGetDiskFreeSpaceEx(NULL, &lfreespace, &usedbytes, NULL))
+		if (pfnGetDiskFreeSpaceEx(srb2home, &lfreespace, &usedbytes, NULL))
 			*freespace = lfreespace.QuadPart;
 		else
 			*freespace = INT32_MAX;
@@ -3281,7 +2708,7 @@ void I_GetDiskFreeSpace(INT64 *freespace)
 	{
 		DWORD SectorsPerCluster, BytesPerSector, NumberOfFreeClusters, TotalNumberOfClusters;
 		GetDiskFreeSpace(NULL, &SectorsPerCluster, &BytesPerSector,
-		                 &NumberOfFreeClusters, &TotalNumberOfClusters);
+						 &NumberOfFreeClusters, &TotalNumberOfClusters);
 		*freespace = BytesPerSector*SectorsPerCluster*NumberOfFreeClusters;
 	}
 #else // Dummy for platform independent; 1GB should be enough
@@ -3291,14 +2718,7 @@ void I_GetDiskFreeSpace(INT64 *freespace)
 
 char *I_GetUserName(void)
 {
-#ifdef GP2X
-	static char username[MAXPLAYERNAME] = "GP2XUSER";
-	return username;
-#elif defined (PSP)
-	static char username[MAXPLAYERNAME] = "PSPUSER";
-	return username;
-#elif !(defined (_WIN32_WCE) || defined (_XBOX))
-	static char username[MAXPLAYERNAME];
+	static char username[MAXPLAYERNAME+1];
 	char *p;
 #ifdef _WIN32
 	DWORD i = MAXPLAYERNAME;
@@ -3329,16 +2749,15 @@ char *I_GetUserName(void)
 
 	if (strcmp(username, "") != 0)
 		return username;
-#endif
 	return NULL; // dummy for platform independent version
 }
 
 INT32 I_mkdir(const char *dirname, INT32 unixright)
 {
 //[segabor]
-#if defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON) || defined (__CYGWIN__) || defined (__OS2__)
+#if defined (__unix__) || defined(__APPLE__) || defined (UNIXCOMMON) || defined (__CYGWIN__)
 	return mkdir(dirname, unixright);
-#elif (defined (_WIN32) || (defined (_WIN32_WCE) && !defined (__GNUC__))) && !defined (_XBOX)
+#elif defined (_WIN32)
 	UNREFERENCED_PARAMETER(unixright); /// \todo should implement ntright under nt...
 	return CreateDirectoryA(dirname, NULL);
 #else
@@ -3352,9 +2771,6 @@ char *I_GetEnv(const char *name)
 {
 #ifdef NEED_SDL_GETENV
 	return SDL_getenv(name);
-#elif defined(_WIN32_WCE)
-	(void)name;
-	return NULL;
 #else
 	return getenv(name);
 #endif
@@ -3364,8 +2780,6 @@ INT32 I_PutEnv(char *variable)
 {
 #ifdef NEED_SDL_GETENV
 	return SDL_putenv(variable);
-#elif defined(_WIN32_WCE)
-	return ((variable)?-1:0);
 #else
 	return putenv(variable);
 #endif
@@ -3378,7 +2792,7 @@ INT32 I_ClipboardCopy(const char *data, size_t size)
 	return -1;
 }
 
-char *I_ClipboardPaste(void)
+const char *I_ClipboardPaste(void)
 {
 	return NULL;
 }
@@ -3406,14 +2820,6 @@ static boolean isWadPathOk(const char *path)
 		return true;
 	}
 
-	sprintf(wad3path, pandf, path, WADKEYWORD2);
-
-	if (FIL_ReadFileOK(wad3path))
-	{
-		free(wad3path);
-		return true;
-	}
-
 	free(wad3path);
 	return false;
 }
@@ -3431,7 +2837,7 @@ static void pathonly(char *s)
 		}
 }
 
-/**	\brief	search for srb2.srb in the given path
+/**	\brief	search for srb2.pk3 in the given path
 
 	\param	searchDir	starting path
 
@@ -3462,9 +2868,9 @@ static const char *searchWad(const char *searchDir)
 	return NULL;
 }
 
-/**	\brief go through all possible paths and look for srb2.srb
+/**	\brief go through all possible paths and look for srb2.pk3
 
-  \return path to srb2.srb if any
+  \return path to srb2.pk3 if any
 */
 static const char *locateWad(void)
 {
@@ -3476,21 +2882,33 @@ static const char *locateWad(void)
 	if (((envstr = I_GetEnv("SRB2WADDIR")) != NULL) && isWadPathOk(envstr))
 		return envstr;
 
-#if defined(_WIN32_WCE) || defined(_PS3) || defined(_PSP)
-	// examine argv[0]
-	strcpy(returnWadPath, myargv[0]);
-	pathonly(returnWadPath);
-	I_PutEnv(va("HOME=%s",returnWadPath));
-	if (isWadPathOk(returnWadPath))
-		return returnWadPath;
-#endif
-
 #ifndef NOCWD
 	I_OutputMsg(",.");
 	// examine current dir
 	strcpy(returnWadPath, ".");
 	if (isWadPathOk(returnWadPath))
 		return NULL;
+#endif
+
+
+#ifdef CMAKECONFIG
+#ifndef NDEBUG
+	I_OutputMsg(","CMAKE_ASSETS_DIR);
+	strcpy(returnWadPath, CMAKE_ASSETS_DIR);
+	if (isWadPathOk(returnWadPath))
+	{
+		return returnWadPath;
+	}
+#endif
+#endif
+
+#ifdef __APPLE__
+	OSX_GetResourcesPath(returnWadPath);
+	I_OutputMsg(",%s", returnWadPath);
+	if (isWadPathOk(returnWadPath))
+	{
+		return returnWadPath;
+	}
 #endif
 
 	// examine default dirs
@@ -3581,10 +2999,10 @@ const char *I_LocateWad(void)
 
 	if (waddir)
 	{
-		// change to the directory where we found srb2.srb
-#if (defined (_WIN32) && !defined (_WIN32_WCE)) && !defined (_XBOX)
+		// change to the directory where we found srb2.pk3
+#if defined (_WIN32)
 		SetCurrentDirectoryA(waddir);
-#elif !defined (_WIN32_WCE) && !defined (_PS3)
+#else
 		if (chdir(waddir) == -1)
 			I_OutputMsg("Couldn't change working directory\n");
 #endif
@@ -3592,26 +3010,39 @@ const char *I_LocateWad(void)
 	return waddir;
 }
 
-#ifdef LINUX
+#ifdef __linux__
 #define MEMINFO_FILE "/proc/meminfo"
 #define MEMTOTAL "MemTotal:"
+#define MEMAVAILABLE "MemAvailable:"
 #define MEMFREE "MemFree:"
+#define CACHED "Cached:"
+#define BUFFERS "Buffers:"
+#define SHMEM "Shmem:"
+
+/* Parse the contents of /proc/meminfo (in buf), return value of "name"
+ * (example: MemTotal) */
+static long get_entry(const char* name, const char* buf)
+{
+	long val;
+	char* hit = strstr(buf, name);
+	if (hit == NULL) {
+		return -1;
+	}
+
+	errno = 0;
+	val = strtol(hit + strlen(name), NULL, 10);
+	if (errno != 0) {
+		CONS_Alert(CONS_ERROR, M_GetText("get_entry: strtol() failed: %s\n"), strerror(errno));
+		return -1;
+	}
+	return val;
+}
 #endif
 
 // quick fix for compil
 UINT32 I_GetFreeMem(UINT32 *total)
 {
-#if defined (_arch_dreamcast)
-	//Dreamcast!
-	if (total)
-		*total = 16<<20;
-	return 8<<20;
-#elif defined (_PSP)
-	// PSP
-	if (total)
-		*total = 32<<20;
-	return 16<<20;
-#elif defined (FREEBSD)
+#ifdef FREEBSD
 	struct vmmeter sum;
 	kvm_t *kd;
 	struct nlist namelist[] =
@@ -3622,20 +3053,23 @@ UINT32 I_GetFreeMem(UINT32 *total)
 	};
 	if ((kd = kvm_open(NULL, NULL, NULL, O_RDONLY, "kvm_open")) == NULL)
 	{
-		*total = 0L;
+		if (total)
+			*total = 0L;
 		return 0;
 	}
 	if (kvm_nlist(kd, namelist) != 0)
 	{
 		kvm_close (kd);
-		*total = 0L;
+		if (total)
+			*total = 0L;
 		return 0;
 	}
 	if (kvm_read(kd, namelist[X_SUM].n_value, &sum,
 		sizeof (sum)) != sizeof (sum))
 	{
 		kvm_close(kd);
-		*total = 0L;
+		if (total)
+			*total = 0L;
 		return 0;
 	}
 	kvm_close(kd);
@@ -3648,7 +3082,15 @@ UINT32 I_GetFreeMem(UINT32 *total)
 	if (total)
 		*total = 32 << 20;
 	return 32 << 20;
-#elif defined (LINUX)
+#elif defined (_WIN32)
+	MEMORYSTATUS info;
+
+	info.dwLength = sizeof (MEMORYSTATUS);
+	GlobalMemoryStatus( &info );
+	if (total)
+		*total = (UINT32)info.dwTotalPhys;
+	return (UINT32)info.dwAvailPhys;
+#elif defined (__linux__)
 	/* Linux */
 	char buf[1024];
 	char *memTag;
@@ -3656,6 +3098,11 @@ UINT32 I_GetFreeMem(UINT32 *total)
 	UINT32 totalKBytes;
 	INT32 n;
 	INT32 meminfo_fd = -1;
+	long Cached;
+	long MemFree;
+	long Buffers;
+	long Shmem;
+	long MemAvailable = -1;
 
 	meminfo_fd = open(MEMINFO_FILE, O_RDONLY);
 	n = read(meminfo_fd, buf, 1023);
@@ -3664,66 +3111,63 @@ UINT32 I_GetFreeMem(UINT32 *total)
 	if (n < 0)
 	{
 		// Error
-		*total = 0L;
+		if (total)
+			*total = 0L;
 		return 0;
 	}
 
 	buf[n] = '\0';
-	if (NULL == (memTag = strstr(buf, MEMTOTAL)))
+	if ((memTag = strstr(buf, MEMTOTAL)) == NULL)
 	{
 		// Error
-		*total = 0L;
+		if (total)
+			*total = 0L;
 		return 0;
 	}
 
 	memTag += sizeof (MEMTOTAL);
 	totalKBytes = atoi(memTag);
 
-	if (NULL == (memTag = strstr(buf, MEMFREE)))
+	if ((memTag = strstr(buf, MEMAVAILABLE)) == NULL)
 	{
-		// Error
-		*total = 0L;
-		return 0;
-	}
+		Cached = get_entry(CACHED, buf);
+		MemFree = get_entry(MEMFREE, buf);
+		Buffers = get_entry(BUFFERS, buf);
+		Shmem = get_entry(SHMEM, buf);
+		MemAvailable = Cached + MemFree + Buffers - Shmem;
 
-	memTag += sizeof (MEMFREE);
-	freeKBytes = atoi(memTag);
+		if (MemAvailable == -1)
+		{
+			// Error
+			if (total)
+				*total = 0L;
+			return 0;
+		}
+		freeKBytes = MemAvailable;
+	}
+	else
+	{
+		memTag += sizeof (MEMAVAILABLE);
+		freeKBytes = atoi(memTag);
+	}
 
 	if (total)
 		*total = totalKBytes << 10;
 	return freeKBytes << 10;
-#elif (defined (_WIN32) || (defined (_WIN32_WCE) && !defined (__GNUC__))) && !defined (_XBOX)
-	MEMORYSTATUS info;
-
-	info.dwLength = sizeof (MEMORYSTATUS);
-	GlobalMemoryStatus( &info );
-	if (total)
-		*total = (UINT32)info.dwTotalPhys;
-	return (UINT32)info.dwAvailPhys;
-#elif defined (__OS2__)
-	UINT32 pr_arena;
-
-	if (total)
-		DosQuerySysInfo( QSV_TOTPHYSMEM, QSV_TOTPHYSMEM,
-							(PVOID) total, sizeof (UINT32));
-	DosQuerySysInfo( QSV_MAXPRMEM, QSV_MAXPRMEM,
-				(PVOID) &pr_arena, sizeof (UINT32));
-
-	return pr_arena;
 #else
 	// Guess 48 MB.
 	if (total)
 		*total = 48<<20;
 	return 48<<20;
-#endif /* LINUX */
+#endif
 }
 
 const CPUInfoFlags *I_CPUInfo(void)
 {
-#if (defined (_WIN32) && !defined (_WIN32_WCE)) && !defined (_XBOX)
+#if defined (_WIN32)
 	static CPUInfoFlags WIN_CPUInfo;
 	SYSTEM_INFO SI;
-	p_IsProcessorFeaturePresent pfnCPUID = (p_IsProcessorFeaturePresent)GetProcAddress(GetModuleHandleA("kernel32.dll"), "IsProcessorFeaturePresent");
+	p_IsProcessorFeaturePresent pfnCPUID = (p_IsProcessorFeaturePresent)(LPVOID)GetProcAddress(GetModuleHandleA("kernel32.dll"), "IsProcessorFeaturePresent");
 
 	ZeroMemory(&WIN_CPUInfo,sizeof (WIN_CPUInfo));
 	if (pfnCPUID)
@@ -3756,8 +3200,8 @@ const CPUInfoFlags *I_CPUInfo(void)
 		WIN_CPUInfo.SSE2        = SDL_HasSSE2();
 		WIN_CPUInfo.AltiVec     = SDL_HasAltiVec();
 	}
-	WIN_CPUInfo.MMXExt      = SDL_HasMMXExt();
-	WIN_CPUInfo.AMD3DNowExt = SDL_Has3DNowExt();
+	WIN_CPUInfo.MMXExt      = SDL_FALSE; //SDL_HasMMXExt(); No longer in SDL2
+	WIN_CPUInfo.AMD3DNowExt = SDL_FALSE; //SDL_Has3DNowExt(); No longer in SDL2
 #endif
 	GetSystemInfo(&SI);
 	WIN_CPUInfo.CPUs = SI.dwNumberOfProcessors;
@@ -3769,9 +3213,9 @@ const CPUInfoFlags *I_CPUInfo(void)
 	memset(&SDL_CPUInfo,0,sizeof (CPUInfoFlags));
 	SDL_CPUInfo.RDTSC       = SDL_HasRDTSC();
 	SDL_CPUInfo.MMX         = SDL_HasMMX();
-	SDL_CPUInfo.MMXExt      = SDL_HasMMXExt();
+	SDL_CPUInfo.MMXExt      = SDL_FALSE; //SDL_HasMMXExt(); No longer in SDL2
 	SDL_CPUInfo.AMD3DNow    = SDL_Has3DNow();
-	SDL_CPUInfo.AMD3DNowExt = SDL_Has3DNowExt();
+	SDL_CPUInfo.AMD3DNowExt = SDL_FALSE; //SDL_Has3DNowExt(); No longer in SDL2
 	SDL_CPUInfo.SSE         = SDL_HasSSE();
 	SDL_CPUInfo.SSE2        = SDL_HasSSE2();
 	SDL_CPUInfo.AltiVec     = SDL_HasAltiVec();

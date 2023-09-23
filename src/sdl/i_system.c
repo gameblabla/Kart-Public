@@ -31,6 +31,9 @@
 
 #include <signal.h>
 
+#include "../r_main.h" // Frame interpolation/uncapped
+#include "../r_fps.h"
+
 #ifdef _WIN32
 #define RPC_NO_WINDOWS_H
 #include <windows.h>
@@ -3068,16 +3071,15 @@ static void I_Fork(void)
 		case 0:
 			break;
 		default:
+#ifdef LOGMESSAGES
 			if (logstream)
 				fclose(logstream);/* the child has this */
-
+#endif
 			c = wait(&status);
 
 #ifdef LOGMESSAGES
 			/* By the way, exit closes files. */
 			logstream = fopen(logfilename, "at");
-#else
-			logstream = 0;
 #endif
 
 			if (c == -1)

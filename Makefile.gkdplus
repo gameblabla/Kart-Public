@@ -1,9 +1,9 @@
 CC = /opt/gkdminiplus-toolchain/bin/aarch64-linux-gcc
 
 OUTPUTNAME = srb2kart.elf
-PROFILE = APPLY
+PROFILE = 0
 
-DEFINES = -DHAVE_BLUA -DHAVE_CURL -DHAVE_SDL -DSDL -DGKDMINIPLUS -DHAVE_MIXER -DNOHW -DHAVE_THREADS -Isrc -Isrc/blua
+DEFINES = -DHAVE_BLUA -DHAVE_CURL -DHAVE_SDL -DSDL -DGKDMINIPLUS -DHAVE_MIXER -DNOHW -DHAVE_THREADS -DHAVE_ZLIB -Isrc -Isrc/blua
 OPT_FLAGS  = -Ofast -fomit-frame-pointer -fipa-pta -fsection-anchors -flto -fdata-sections -ffunction-sections -D_GNU_SOURCE=1 -D_DEFAULT_SOURCE -D_REENTRANT $(shell /opt/gkdminiplus-toolchain/aarch64-buildroot-linux-gnu/sysroot/usr/bin/sdl2-config --cflags)
 OPT_FLAGS += -mtune=cortex-a55 -march=armv8.2-a
 

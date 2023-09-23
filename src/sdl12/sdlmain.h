@@ -57,6 +57,8 @@ extern SDLJoyInfo_t JoyInfo;
 /**	\brief SDL inof about joystick 2
 */
 extern SDLJoyInfo_t JoyInfo2;
+extern SDLJoyInfo_t JoyInfo3;
+extern SDLJoyInfo_t JoyInfo4;
 
 void I_GetConsoleEvents(void);
 

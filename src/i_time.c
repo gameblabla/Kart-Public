@@ -67,6 +67,7 @@ void I_UpdateTime(fixed_t timescale)
 	ticratescaled = (double)TICRATE * FIXED_TO_FLOAT(timescale);
 
 	enterprecise = I_GetPreciseTime();
+	
 	elapsedseconds = (double)(enterprecise - oldenterprecise) / I_GetPrecisePrecision();
 	tictimer += elapsedseconds;
 	while (tictimer > 1.0/ticratescaled)

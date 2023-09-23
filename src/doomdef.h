@@ -127,7 +127,7 @@
 // turn this on by make etc.. DEBUGMODE = 1 or use the Debug profile in the VC++ projects
 //#endif
 #if defined (_WIN32) || (defined (__unix__) && !defined (MSDOS)) || defined(__APPLE__) || defined (UNIXCOMMON) || defined (macintosh)
-#define LOGMESSAGES // write message in log.txt
+//#define LOGMESSAGES // write message in log.txt
 #endif
 
 #ifdef LOGMESSAGES

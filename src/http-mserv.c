@@ -86,9 +86,14 @@ Printf_url (const char *url)
 {
 	boolean startup;
 
+	#ifdef HAVE_THREADS
 	I_lock_mutex(&con_mutex);
+	#endif
 	startup = con_startup;
+	
+	#ifdef HAVE_THREADS
 	I_unlock_mutex(con_mutex);
+	#endif
 
 	(startup ? I_OutputMsg : CONS_Printf)(
 			"HMS: connecting '%s'...\n", url);
@@ -204,7 +209,9 @@ HMS_connect (const char *format, ...)
 	if (cv_masterserver_debug.value)
 	{
 		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+		#ifdef LOGMESSAGES
 		curl_easy_setopt(curl, CURLOPT_STDERR, logstream);
+		#endif
 	}
 
 	if (M_CheckParm("-bindaddr") && M_IsNextParm())

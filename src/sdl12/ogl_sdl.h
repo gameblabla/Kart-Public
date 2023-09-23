@@ -1,8 +1,7 @@
 // Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
-// Copyright (C) 1993-1996 by id Software, Inc.
-// Portions Copyright (C) 1998-2000 by DooM Legacy Team.
+// Copyright (C) 1998-2000 by DooM Legacy Team.
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,13 +14,17 @@
 // GNU General Public License for more details.
 //-----------------------------------------------------------------------------
 /// \file
-/// \brief Graphical Alerts for MacOSX
-///
-///	Shows alerts, since we can't just print these to the screen when
-///	launched graphically on a mac.
+/// \brief SDL specific part of the OpenGL API for SRB2
 
-#ifdef __APPLE_CC__
+#include "../v_video.h"
 
-extern int MacShowAlert(const char *title, const char *message, const char *button1, const char *button2, const char *button3);
+extern SDL_Surface *vidSurface;
+extern void *GLUhandle;
 
+boolean OglSdlSurface(INT32 w, INT32 h, boolean isFullscreen);
+
+void OglSdlFinishUpdate(boolean vidwait);
+
+#ifdef _CREATE_DLL_
+EXPORT void HWRAPI( OglSdlSetPalette ) (RGBA_t *palette, RGBA_t *pgamma);
 #endif

@@ -2411,6 +2411,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\hardware\hw_glide.h"
+				>
+			</File>
+			<File
 				RelativePath="..\hardware\hw_glob.h"
 				>
 			</File>
